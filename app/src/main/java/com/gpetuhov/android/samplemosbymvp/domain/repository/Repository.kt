@@ -12,6 +12,6 @@ object Repository {
     fun getGreeting(): Single<Greeting> {
         return Single
             .just(Greeting("Hello!!!"))
-            .delay(2, TimeUnit.SECONDS)     // this is needed to mock database or network latency
+            .delay(5, TimeUnit.SECONDS)     // this is needed to mock database or network latency
     }
 }

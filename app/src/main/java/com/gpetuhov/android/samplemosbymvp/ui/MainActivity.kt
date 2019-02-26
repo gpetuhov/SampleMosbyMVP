@@ -2,6 +2,7 @@ package com.gpetuhov.android.samplemosbymvp.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.gpetuhov.android.samplemosbymvp.R
@@ -21,12 +22,14 @@ import com.hannesdorfmann.mosby3.mvp.viewstate.MvpViewStateActivity
 class MainActivity : MvpViewStateActivity<MainView, MainPresenter, MainViewState>(), MainView {
 
     lateinit var greetingTextView: TextView
+    lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         greetingTextView = findViewById(R.id.greeting_text)
+        progressBar = findViewById(R.id.progress_bar)
 
         // All user interactions must be handled by the presenter
         greetingTextView.setOnClickListener { presenter.loadGreeting() }
@@ -55,10 +58,11 @@ class MainActivity : MvpViewStateActivity<MainView, MainPresenter, MainViewState
     override fun showLoading() {
         viewState.setShowLoading()
         greetingTextView.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-        // TODO
+        progressBar.visibility = View.GONE
     }
 
     override fun showError() {
