@@ -29,6 +29,9 @@ class MainViewState : ViewState<MainView> {
         state = STATE_SHOW_ERROR
     }
 
+    // This gets called on orientation change.
+    // Note that here ViewState updates the view with state and date, not the presenter.
+    // Presenter is not called (so data is not fetched again on orientation change).
     override fun apply(view: MainView, retained: Boolean) {
         when (state) {
             STATE_SHOW_DATA -> view.showGreeting(data!!)

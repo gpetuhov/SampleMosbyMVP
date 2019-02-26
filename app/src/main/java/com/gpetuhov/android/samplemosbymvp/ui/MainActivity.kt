@@ -11,6 +11,13 @@ import com.gpetuhov.android.samplemosbymvp.presentation.view.MainView
 import com.gpetuhov.android.samplemosbymvp.presentation.viewstate.MainViewState
 import com.hannesdorfmann.mosby3.mvp.viewstate.MvpViewStateActivity
 
+// Seqence of interactions:
+// 1. User clicks on some button
+// 2. Presenter gets called
+// 3. Presenter triggers interactor
+// 4. Presenter updates view with results
+
+// Our UI implements MvpViewStateActivity (for ViewState) and MainView
 class MainActivity : MvpViewStateActivity<MainView, MainPresenter, MainViewState>(), MainView {
 
     lateinit var greetingTextView: TextView
@@ -21,8 +28,11 @@ class MainActivity : MvpViewStateActivity<MainView, MainPresenter, MainViewState
 
         greetingTextView = findViewById(R.id.greeting_text)
 
+        // All user interactions must be handled by the presenter
         greetingTextView.setOnClickListener { presenter.loadGreeting() }
     }
+
+    // === MvpViewStateActivity ===
 
     override fun onNewViewStateInstance() {
         // Do nothing
@@ -32,14 +42,18 @@ class MainActivity : MvpViewStateActivity<MainView, MainPresenter, MainViewState
 
     override fun createPresenter() = MainPresenterImpl()
 
+    // === MainView ===
+    // These are called by the presenter in order to change view
+
     override fun showGreeting(greetingText: String) {
-//        viewState.setData(greetingText)
+        // If we do not update view state here, then it will not be restored on orientation change
+        viewState.setData(greetingText)
         greetingTextView.visibility = View.VISIBLE
         greetingTextView.text = greetingText
     }
 
     override fun showLoading() {
-//        viewState.setShowLoading()
+        viewState.setShowLoading()
         greetingTextView.visibility = View.GONE
     }
 
@@ -48,7 +62,7 @@ class MainActivity : MvpViewStateActivity<MainView, MainPresenter, MainViewState
     }
 
     override fun showError() {
-//        viewState.setShowError()
+        viewState.setShowError()
         Toast.makeText(applicationContext, "Error loading greeting", Toast.LENGTH_LONG).show()
     }
 }
