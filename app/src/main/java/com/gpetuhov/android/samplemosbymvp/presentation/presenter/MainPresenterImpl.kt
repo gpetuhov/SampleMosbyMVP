@@ -13,20 +13,22 @@ class MainPresenterImpl : MvpBasePresenter<MainView>(), MainPresenter {
     private val disposables: CompositeDisposable = CompositeDisposable()
 
     override fun loadGreeting() {
-//        // Presenter interacts with interactors to trigger use cases
-//        val greeting = GetGreetingInteractor.getGreeting()
-//
-//        // Update view with the results of the use case if view is attached
-//        ifViewAttached { view -> view.showGreeting(greeting.text) }
-
+        // Presenter interacts with interactors to trigger use cases
+        // and updates view if the view is attached.
+        // Here interactor gets called on background thread
+        // (because it has a delay that mimics database latency).
         disposables.add(
             GetGreetingInteractor.getGreeting()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                // Gets called at the beginning
                 .doOnSubscribe { ifViewAttached { view ->  view.showLoading() } }
+                // Gets called after onSuccess or onError
                 .doFinally { ifViewAttached { view ->  view.hideLoading() } }
                 .subscribe(
+                    // onSuccess
                     { ifViewAttached { view -> view.showGreeting(it.text) } },
+                    // onError
                     { ifViewAttached { view ->  view.showError() } }
                 )
         )
